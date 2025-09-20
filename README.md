@@ -1,6 +1,6 @@
 # 🎬 TikTok Video Downloader - Direct Links & Downloads
 
-![TikTok Video Downloader](https://raw.githubusercontent.com/apifytech/store-assets/master/actors/tiktok-scraper/tiktok-scraper-cover.jpg)
+![Sample Output](https://raw.githubusercontent.com/DZ-ABDLHAKIM/tiktok-video-downloader/refs/heads/main/tiktok-scraper-sample-output.png)
 
 Extract direct download links from TikTok videos with complete metadata and automatic video downloads using intelligent resource allocation. Built for content creators, researchers, and businesses who need reliable access to TikTok content without watermarks.
 
