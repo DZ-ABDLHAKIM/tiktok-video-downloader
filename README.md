@@ -2,7 +2,7 @@
 
 ![TikTok Video Downloader](https://raw.githubusercontent.com/apifytech/store-assets/master/actors/tiktok-scraper/tiktok-scraper-cover.jpg)
 
-Extract direct download links from TikTok videos with complete metadata and automatic video downloads using intelligent resource allocation. Built for content creators, researchers, and businesses who need reliable access to TikTok content without watermarks.
+Extract direct download links from TikTok videos with complete metadata and optional automatic video downloads using intelligent resource allocation. Built for content creators, researchers, and businesses who need reliable access to TikTok content without watermarks.
 
 ## Key Benefits & Use Cases
 
@@ -31,7 +31,7 @@ Extract direct download links from TikTok videos with complete metadata and auto
 
 ### Smart Download System
 - **Direct URLs**: Instant access to playable video links without TikTok watermarks
-- **Automatic Downloads**: Optional video file downloads with intelligent resource allocation
+- **Optional Downloads**: Configurable video file downloads with intelligent resource allocation
 - **Quality Selection**: Choose between 30 FPS or 60 FPS video quality
 - **Memory Optimization**: Dynamic resource calculation based on file size
 
@@ -68,6 +68,14 @@ Process individual TikTok videos or batch multiple URLs:
 - Use Case: Choose video frame rate based on your needs
 - Note: Actor automatically selects best available bitrate within chosen FPS
 
+### 📥 Download Control
+
+**💾 downloadVideo** (Boolean)
+- Default: `true`
+- Purpose: Enable or disable automatic video file downloads
+- Use Case: Set to `false` for metadata-only extraction to save costs and processing time
+- Note: When disabled, only direct URLs and metadata are extracted
+
 ### ⏱️ Processing Control
 
 **⏰ timeout** (Integer)
@@ -76,10 +84,20 @@ Process individual TikTok videos or batch multiple URLs:
 - Purpose: Maximum time to wait for each video extraction
 - Use Case: Adjust based on network conditions and video complexity
 
+### 🌐 Proxy Configuration
+
+**🔒 proxyConfig** (Object)
+- Purpose: Use proxy servers for requests to avoid IP blocking
+- Recommended: Residential proxies for reliable access
+- Benefits: Better success rates, geographic flexibility, reduced blocking
+- Default: Disabled (direct requests)
+
 ## 📊 Sample Output Structure
 
 ![Sample Output](https://raw.githubusercontent.com/DZ-ABDLHAKIM/tiktok-video-downloader/refs/heads/main/tiktok-scraper-sample-output.png)
 
+
+### Complete Output with Download
 ```json
 {
   "videoUrl": "https://www.tiktok.com/@dummyuser/video/7234567890123456789",
@@ -87,7 +105,7 @@ Process individual TikTok videos or batch multiple URLs:
   "title": "Sample TikTok Video Title",
   "author": "dummyuser",
   "authorId": "1234567890123456789",
-	"Cover": "https://p16-pu-sign-no.tiktokcdn-eu.com/tos-no1a-p-0037-no/o0gWBfoTDFe...",
+  "Cover": "https://p16-pu-sign-no.tiktokcdn-eu.com/tos-no1a-p-0037-no/o0gWBfoTDFe...",
   "duration": 30,
   "viewCount": 1500000,
   "likeCount": 150000,
@@ -117,21 +135,63 @@ Process individual TikTok videos or batch multiple URLs:
 }
 ```
 
+### Metadata-Only Output (downloadVideo: false)
+```json
+{
+  "videoUrl": "https://www.tiktok.com/@dummyuser/video/7234567890123456789",
+  "directUrl": "https://v16-webapp-prime.tiktok.com/video/tos/alisg/example-url...",
+  "title": "Sample TikTok Video Title",
+  "author": "dummyuser",
+  "authorId": "1234567890123456789",
+  "Cover": "https://p16-pu-sign-no.tiktokcdn-eu.com/tos-no1a-p-0037-no/o0gWBfoTDFe...",
+  "duration": 30,
+  "viewCount": 1500000,
+  "likeCount": 150000,
+  "shareCount": 12000,
+  "commentCount": 8500,
+  "width": 576,
+  "height": 1024,
+  "quality": "540p",
+  "fileSize": "5826163",
+  "videoId": "7234567890123456789",
+  "extractedAt": "2025-09-20T12:00:00.000Z",
+  "download": {
+    "available": false,
+    "requested": false,
+    "status": "disabled"
+  },
+  "processingTime": 1200,
+  "success": true
+}
+```
+
 The extracted videos are clean without TikTok watermarks, as they're obtained directly from TikTok's content delivery network rather than through the mobile app interface.
 
 ## 🎯 Configuration Examples
 
-### Basic Video Extraction
+### Basic Video Extraction (Metadata Only)
 ```json
 {
   "videoUrls": [
     "https://www.tiktok.com/@samplecreator/video/7234567890123456789"
   ],
-  "preferredFps": "60"
+  "preferredFps": "60",
+  "downloadVideo": false
 }
 ```
 
-### Batch Processing with Custom Settings
+### Full Extraction with Downloads
+```json
+{
+  "videoUrls": [
+    "https://www.tiktok.com/@samplecreator/video/7234567890123456789"
+  ],
+  "preferredFps": "60",
+  "downloadVideo": true
+}
+```
+
+### Batch Processing with Proxy
 ```json
 {
   "videoUrls": [
@@ -140,18 +200,29 @@ The extracted videos are clean without TikTok watermarks, as they're obtained di
     "https://www.tiktok.com/@creator3/video/7333333333333333333"
   ],
   "preferredFps": "30",
-  "timeout": 45
+  "timeout": 45,
+  "downloadVideo": true,
+  "proxyConfig": {
+    "useApifyProxy": true,
+    "apifyProxyGroups": ["RESIDENTIAL"]
+  }
 }
 ```
 
-### High Quality Processing
+### High Performance Configuration
 ```json
 {
   "videoUrls": [
     "https://www.tiktok.com/@qualitycreator/video/7444444444444444444"
   ],
   "preferredFps": "60",
-  "timeout": 60
+  "timeout": 60,
+  "downloadVideo": true,
+  "proxyConfig": {
+    "useApifyProxy": true,
+    "apifyProxyGroups": ["RESIDENTIAL"],
+    "apifyProxyCountry": "US"
+  }
 }
 ```
 
@@ -159,9 +230,16 @@ The extracted videos are clean without TikTok watermarks, as they're obtained di
 
 ### Reliability & Performance
 - **Smart Rate Limiting**: 2-second delays between requests to avoid detection
+- **Session Management**: Advanced proxy session rotation for improved success rates
 - **Error Recovery**: Robust error handling with detailed failure reporting
 - **Batch Processing**: Efficient handling of multiple URLs with progress tracking
 - **Resource Optimization**: Dynamic memory allocation for download operations
+
+### Proxy & Network Features
+- **Residential Proxies**: Support for Apify's residential proxy network
+- **Geographic Selection**: Choose proxy country for regional content access
+- **Session Rotation**: Automatic session management to avoid IP blocking
+- **Retry Logic**: Intelligent retry mechanisms with exponential backoff
 
 ### Content Processing
 - **FPS-Based Selection**: Intelligent video quality selection based on preferred frame rate
@@ -180,29 +258,46 @@ The extracted videos are clean without TikTok watermarks, as they're obtained di
 ### Video Extraction Issues
 - **No Direct URL**: Video may be private, deleted, or region-restricted
 - **Quality Issues**: Try different FPS settings if preferred quality unavailable
-- **Access Denied**: Some videos require authentication or have geographic restrictions
+- **Access Denied**: Enable proxy configuration for better access
+- **Geographic Blocks**: Use proxy with specific country settings
 
 ### Download Problems
 - **File Size Errors**: Large videos require more memory - Actor handles this automatically
 - **Timeout Issues**: Increase timeout setting for slow network conditions
 - **Authentication**: Ensure APIFY_TOKEN is properly set for download functionality
+- **Storage Limits**: Check available Key-Value Store space for large downloads
+
+### Proxy Issues
+- **Connection Failures**: Verify proxy configuration and available proxy groups
+- **Geographic Restrictions**: Try different proxy countries if content is region-locked
+- **Rate Limiting**: Proxy helps but TikTok may still impose limits on heavy usage
+- **Session Problems**: Actor automatically manages session rotation
 
 ### Performance Issues
-- **Slow Processing**: Check TikTok server status and network connectivity
-- **Rate Limiting**: Actor includes built-in delays, but TikTok may still impose limits
+- **Slow Processing**: Enable proxy configuration for better stability
+- **Rate Limiting**: Actor includes built-in delays, but consider proxy usage
 - **Memory Usage**: Downloads automatically allocate optimal memory based on file size
+- **Cost Optimization**: Use `downloadVideo: false` for metadata-only extraction
 
 ## 📈 Resource Requirements
 
 ### Memory Allocation
 - **Basic Extraction**: 128-256 MB (default)
-- **With Downloads**: Auto-calculated based on video file sizes
+- **With Downloads**: Auto-calculated based on video file sizes (128MB-32GB)
 - **Batch Processing**: Scales automatically per video
+- **Proxy Usage**: Minimal additional overhead
 
 ### Processing Times
-- **Single Video**: 3-8 seconds average
+- **Metadata Only**: 1-3 seconds average per video
+- **With Downloads**: 3-8 seconds + download time
 - **Batch Processing**: ~5 seconds per video + 2-second delays
 - **Large Files**: Download time varies based on file size and network speed
+
+### Cost Considerations
+- **Metadata Only**: Minimal compute units (recommended for large batches)
+- **With Downloads**: Higher cost due to memory allocation and processing time
+- **Proxy Usage**: Additional proxy costs when enabled
+- **Storage**: Downloaded files count toward Key-Value Store limits
 
 ## ⚠️ Important Notes
 
@@ -217,6 +312,13 @@ The extracted videos are clean without TikTok watermarks, as they're obtained di
 - **Public Content**: Only processes publicly accessible TikTok videos
 - **CDN Availability**: Direct URLs have expiration times set by TikTok
 - **Geographic Restrictions**: Some content may not be available in all regions
+- **Proxy Requirements**: Some regions or high-volume usage may require proxy configuration
+
+### Download Requirements
+- **APIFY_TOKEN**: Required environment variable for video download functionality
+- **Storage Space**: Downloaded videos consume Key-Value Store space
+- **Memory Allocation**: Large videos automatically allocate appropriate resources
+- **Processing Time**: Downloads increase overall Actor execution time
 
 ---
 
@@ -227,5 +329,10 @@ The extracted videos are clean without TikTok watermarks, as they're obtained di
 - **🐙 GitHub**: [DZ-ABDLHAKIM](https://github.com/DZ-ABDLHAKIM)
 - **🐦 Twitter**: [@DZ_45Omar](https://x.com/DZ_45Omar)
 - **🔧 Apify**: [dz_omar](https://apify.com/dz_omar)
+
+### Related Actors
+- **[Universal File Downloader](https://apify.com/dz_omar/universal-file-downloader)**: Powers the intelligent download system
+- **TikTok Profile Scraper**: Extract user profiles and video lists
+- **Social Media Analytics**: Comprehensive social media data extraction
 
 ---
